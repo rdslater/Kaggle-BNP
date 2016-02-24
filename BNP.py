@@ -86,10 +86,18 @@ Y_pred = random_forest.predict_proba(X_test)
 #fig.set(ylim=(100, 131))
 #fig.set(xlim=(0,0.01))
 
-#random forest based on top significant columns
+#random forest based on top significant columns  
+#score was worse than using all data. (0.499)  apparently random forests do not work like linear regressions
 #tt=X_test.iloc[:,(49,65,11,30,128,71,9,61,37,46,113,23,109,13,39)]
 #tst=X_train.iloc[:,(49,65,11,30,128,71,9,61,37,46,113,23,109,13,39)]
 #from sklearn.ensemble import RandomForestClassifier
 #random_forest = RandomForestClassifier(n_estimators=100)
 #random_forest.fit(tst, Y_train)
 #Y_pred = random_forest.predict_proba(tt)
+
+# Create submission
+
+submission = pd.DataFrame()  
+submission["ID"]            = test_df["ID"]
+submission["PredictedProb"] = Y_pred[:,1]
+submission.to_csv('bnp.csv', index=False)  #score .47423 --800th place =(
