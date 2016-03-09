@@ -1,0 +1,99 @@
+
+# coding: utf-8
+
+# In[79]:
+
+# pandas
+import pandas as pd
+from pandas import Series,DataFrame
+
+# numpy, matplotlib, seaborn
+import numpy as np
+import matplotlib.pyplot as plt
+#import seaborn as sns
+from sklearn import preprocessing
+#sns.set_style('whitegrid')
+get_ipython().magic('matplotlib inline')
+
+
+# get bnp & test csv files as a DataFrame
+train_df   = pd.read_csv("C://Users//Robert//Downloads//train.csv~//train.csv")
+test_df  = pd.read_csv("C://Users//Robert//Downloads//test.csv~//test.csv")
+
+
+
+
+
+# In[2]:
+
+for f in train_df.columns:
+    # fill NaN values with mean
+    if train_df[f].dtype == 'float64':
+        train_df.loc[:,f][np.isnan(train_df[f])] = -1
+        test_df[f][np.isnan(test_df[f])] = -1
+        
+    # fill NaN values with most occured value
+    elif train_df[f].dtype == 'object':
+        train_df[f][train_df[f] != train_df[f]] = -1
+        test_df[f][test_df[f] != test_df[f]] = -1
+        
+for f in train_df.columns:
+    if train_df[f].dtype == 'object':
+        lbl = preprocessing.LabelEncoder()
+        lbl.fit(np.unique(list(train_df[f].values)  + list(test_df[f].values)))
+        train_df[f]   = lbl.transform(list(train_df[f].values))
+        test_df[f]  = lbl.transform(list(test_df[f].values))
+        
+
+
+# In[70]:
+
+import scipy as sp
+df = pd.DataFrame([['A' ,'A', 1]],columns=list('ABC'))
+colnames=list(train_df.columns.values)
+iindex=2
+for i in colnames[2:]:
+    index=iindex+1
+    for j in colnames[index:]:
+        index=index+1
+        R=sp.stats.pearsonr(train_df[i],train_df[j])[0]
+        R=R*R
+        df2=pd.DataFrame([[i,j,R]],columns=list('ABC'))
+        df=df.append(df2,ignore_index=True)
+    iindex=iindex+1
+
+
+
+
+df[df.C>0.99].sort_values(by="C",ascending=False)
+#drop variable for correlation--correlated variable in paranthesis 
+#v53(v11), v95(v92), v60(v26), v116(v43), v76(v17), v96:v41:v49:v67,v49(v29),v65:v11(v20)
+#v25 - > 5 times (v105, v46, v54, v63, v89)
+#v46  -> 3 times (v25, v63, v8)
+#v63  -> 3 times (v25, v46, v8)
+#v64  -> 3 times (v17, v48, v76)
+#v17  -> 2 times (v64, v76)
+#v33  -> 2 times (v121, v83)
+#v48  -> 2 times (v106, v64)
+#v54  -> 2 times (v25, v89)
+#v76  -> 2 times (v17, v64)
+#v8   -> 2 times (v46, v63)
+#v83  -> 2 times (v121, v33)
+#v89  -> 2 times (v25, v54)
+#v96  -> 2 times (v29, v41)
+#v121 -> 2 times (v33, v83)
+#continuous list: v8, v17, v25, v29, v33, v41, v45, v46, v48, v54, v63, v64 v76, v83, v89, v105, v106 v121
+#catgory list: v107, v110
+
+
+
+df[(df.A=='v11') & (df.C>0.9)].sort_values(by="C",ascending=False)
+train_df.select_dtypes(include=['object'])
+#v91 and V107 are related via substution cipher
+#same for v47 and v110.
+
+
+
+
+
+#
